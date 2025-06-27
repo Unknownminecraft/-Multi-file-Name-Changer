@@ -3,5 +3,7 @@
 > [!NOTE]
 > This editor tool is made for `.json` file, may not work with other file format.
 
-title [^1]  
-[^1]: sentence
+[ ✓ ] Aims [^1]  
+[^1]: To make something easier.
+
+😃😃😃😃
