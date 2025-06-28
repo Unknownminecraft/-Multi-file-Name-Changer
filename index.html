@@ -3,38 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Name Changer</title>
+    <title>File Name Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         body {
-            background-color: grey;
+            background-color: #CDC1FF; /* New Background */
             font-family: sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px 0;
+            padding: 40px; /* Ensures background is visible on all sides */
         }
 
         .page-border {
-            background-color: white;
-            padding: 20px;
+            background-color: #BFECFF; /* New Page Container Color */
+            padding: 20px 30px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
             width: 90%;
-            max-width: 700px;
+            max-width: 800px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #333;
+        }
+
+        h2 {
+            color: #555;
+            font-weight: normal;
         }
 
         .box {
-            background-color: #f0f0f0;
+            background-color: #FFF6E3; /* New Box Color */
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 10px;
         }
 
         .box-text {
-            color: red;
+            color: #5D4037; /* Dark color for good contrast */
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 1.1em;
@@ -43,7 +54,7 @@
         .button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #2E7D32;
             color: white;
             border: none;
             border-radius: 8px;
@@ -56,20 +67,35 @@
         }
 
         .button:hover:not(:disabled) {
-            background-color: #45a049;
+            background-color: #1B5E20;
         }
         
         .button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
-
-        #file-upload-button {
-            background-color: #008CBA;
+        
+        #file-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            background-color: #f0eada;
+            border-radius: 5px;
+            margin-bottom: 5px;
         }
 
-        #file-upload-button:hover {
-            background-color: #007B9A;
+        .remove-file-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            line-height: 22px;
+            text-align: center;
+            font-weight: bold;
         }
 
         .input-group {
@@ -88,7 +114,7 @@
         
         .add-icon {
             font-size: 24px;
-            background-color: #f44336;
+            background-color: #008CBA;
             color: white;
             border: none;
             border-radius: 50%;
@@ -100,71 +126,92 @@
             flex-shrink: 0;
         }
         
-        .add-icon:hover {
-            background-color: #d32f2f;
+        .reverse-btn {
+            font-size: 18px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            line-height: 30px;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 15px 0;
         }
 
         .footer {
-            background-color: lightblue;
+            background-color: pink;
             padding: 10px;
             border-radius: 10px;
             text-align: center;
             margin-top: 20px;
+            color: #212121; /* New Footer Text Color */
         }
 
         .footer a {
-            color: #0000EE;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
+            color: #0000EE; /* Standard link color for visibility */
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <div class="page-border">
+        <h1>File Name Editor</h1>
+        <h2>Enjoy!</h2>
 
         <div class="box">
             <p class="box-text">Upload file</p>
-            <label for="file-input" class="button" id="file-upload-button">Upload .json Files</label>
+            <label for="file-input" class="button">Upload .json Files</label>
             <input type="file" id="file-input" multiple accept=".json" style="display: none;">
-            <div id="file-list" style="margin-top: 10px;"></div>
+            <ul id="file-list" style="list-style: none; padding: 0; margin-top: 10px;"></ul>
         </div>
 
         <div class="box">
             <p class="box-text">Rename text Inside file</p>
+            <strong>Replace words:</strong>
             <div id="content-replace-container">
                 <div class="input-group">
                     <input type="text" placeholder="Word to replace">
                     <input type="text" placeholder="New word">
+                    <button class="reverse-btn" title="Reverse words">🔄</button>
                 </div>
             </div>
-            <div class="input-group">
-                 <button class="add-icon" data-target="content-replace-container">+</button>
-                 <button id="replace-content-button" class="button">Replace Text Inside Files</button>
-            </div>
+            <button class="add-icon" data-target="content-replace-container" title="Add more words to replace">+</button>
+            <hr>
+            <strong>Delete word:</strong>
+             <div class="input-group">
+                 <input type="text" id="delete-word-input" placeholder="Word to delete completely">
+             </div>
+            <button id="apply-content-changes" class="button">Apply Changes to File Content</button>
         </div>
 
         <div class="box">
             <p class="box-text">Replace file name</p>
+            <strong>Replace words:</strong>
              <div id="filename-replace-container">
                 <div class="input-group">
                     <input type="text" placeholder="Word to replace in filename">
                     <input type="text" placeholder="New word for filename">
+                    <button class="reverse-btn" title="Reverse words">🔄</button>
                 </div>
             </div>
-            <div class="input-group">
-                 <button class="add-icon" data-target="filename-replace-container">+</button>
-                 <button id="rename-files-button" class="button">Replace Text in Filenames</button>
-            </div>
+            <button class="add-icon" data-target="filename-replace-container" title="Add more words to replace">+</button>
+            <button id="apply-filename-changes" class="button">Rename</button>
         </div>
 
         <div class="box">
             <p class="box-text">Download</p>
-            <button id="download-zip-button" class="button">Download .zip</button>
-            <button id="download-files-button" class="button">Download Files</button>
+            <button id="download-zip-button" class="button">Download zip</button>
+            <button id="download-files-button" class="button">Download file</button>
         </div>
 
         <div class="footer">
@@ -175,115 +222,125 @@
     <script>
         // --- DOM Element References ---
         const fileInput = document.getElementById('file-input');
-        const fileListDiv = document.getElementById('file-list');
-        const replaceContentButton = document.getElementById('replace-content-button');
-        const renameFilesButton = document.getElementById('rename-files-button');
+        const fileListUl = document.getElementById('file-list');
+        const applyContentButton = document.getElementById('apply-content-changes');
+        const applyFilenameButton = document.getElementById('apply-filename-changes');
         const downloadZipButton = document.getElementById('download-zip-button');
         const downloadFilesButton = document.getElementById('download-files-button');
-        document.querySelectorAll('.add-icon').forEach(button => {
-            button.addEventListener('click', handleAddMore);
+
+        // --- Event Delegation for Dynamic Buttons ---
+        document.body.addEventListener('click', function(event) {
+            // Handle Reverse Button Clicks
+            if (event.target.classList.contains('reverse-btn')) {
+                const inputGroup = event.target.closest('.input-group');
+                const inputs = inputGroup.querySelectorAll('input[type="text"]');
+                if (inputs.length === 2) {
+                    const val1 = inputs[0].value;
+                    const val2 = inputs[1].value;
+                    inputs[0].value = val2;
+                    inputs[1].value = val1;
+                }
+            }
+            // Handle Add Icon Clicks
+            if (event.target.classList.contains('add-icon')) {
+                handleAddMore(event);
+            }
         });
 
         // --- State Management ---
-        let processedFiles = []; // This will hold objects {name: "string", blob: Blob}
+        let processedFiles = []; // This will hold objects {id: number, name: "string", blob: Blob}
+        let fileCounter = 0;
 
         // --- Initial Button State ---
         function updateButtonStates() {
             const hasFiles = processedFiles.length > 0;
-            replaceContentButton.disabled = !hasFiles;
-            renameFilesButton.disabled = !hasFiles;
-            downloadZipButton.disabled = !hasFiles;
-            downloadFilesButton.disabled = !hasFiles;
+            [applyContentButton, applyFilenameButton, downloadZipButton, downloadFilesButton].forEach(btn => {
+                btn.disabled = !hasFiles;
+            });
         }
-        updateButtonStates(); // Set initial state on load
+        updateButtonStates();
 
         // --- Event Listeners ---
         fileInput.addEventListener('change', async (event) => {
             const files = Array.from(event.target.files);
             if (files.length === 0) return;
 
-            processedFiles = []; // Reset
             for (const file of files) {
                 const content = await file.text();
                 processedFiles.push({
+                    id: fileCounter++,
                     name: file.name,
                     blob: new Blob([content], { type: 'application/json' })
                 });
             }
-            
             displayFileNames();
             updateButtonStates();
-            alert(`${files.length} file(s) loaded successfully.`);
         });
 
-        replaceContentButton.addEventListener('click', async () => {
+        applyContentButton.addEventListener('click', async () => {
             const replacements = getReplacementsFromContainer('content-replace-container');
-            if (replacements.length === 0) {
-                alert('Please provide at least one word/phrase to replace inside the files.');
+            const wordToDelete = document.getElementById('delete-word-input').value.trim();
+            if (replacements.length === 0 && !wordToDelete) {
+                alert('Please provide words to replace or delete inside the files.');
                 return;
             }
-
             for (const file of processedFiles) {
                 let content = await file.blob.text();
-                replacements.forEach(rep => {
-                    content = content.replace(new RegExp(escapeRegExp(rep.oldWord), 'g'), rep.newWord);
-                });
+                replacements.forEach(rep => content = content.replace(new RegExp(escapeRegExp(rep.oldWord), 'g'), rep.newWord));
+                if (wordToDelete) content = content.replace(new RegExp(escapeRegExp(wordToDelete), 'g'), '');
                 file.blob = new Blob([content], { type: 'application/json' });
             }
-            alert('Content has been replaced in all files. You can now download them.');
+            alert('Content changes have been applied.');
         });
         
-        renameFilesButton.addEventListener('click', () => {
+        applyFilenameButton.addEventListener('click', () => {
             const replacements = getReplacementsFromContainer('filename-replace-container');
             if (replacements.length === 0) {
-                alert('Please provide at least one word/phrase to replace in the filenames.');
+                alert('Please provide words to replace in the filenames.');
                 return;
             }
-            
             processedFiles.forEach((file) => {
                 let fileNameWithoutExt = file.name.replace(/\.json$/, '');
-                let fileExtension = '.json';
-                
-                replacements.forEach(rep => {
-                    fileNameWithoutExt = fileNameWithoutExt.replace(new RegExp(escapeRegExp(rep.oldWord), 'g'), rep.newWord);
-                });
-                file.name = fileNameWithoutExt + fileExtension;
+                replacements.forEach(rep => fileNameWithoutExt = fileNameWithoutExt.replace(new RegExp(escapeRegExp(rep.oldWord), 'g'), rep.newWord));
+                file.name = fileNameWithoutExt + '.json';
             });
-
-            displayFileNames(); // Update the displayed list with new names
-            alert('File names have been updated. You can now download them.');
+            displayFileNames();
+            alert('Filename changes have been applied.');
         });
 
-
-        downloadFilesButton.addEventListener('click', () => {
-            processedFiles.forEach((file) => {
-                downloadBlob(file.blob, file.name);
-            });
-        });
+        downloadFilesButton.addEventListener('click', () => processedFiles.forEach(file => downloadBlob(file.blob, file.name)));
 
         downloadZipButton.addEventListener('click', () => {
             const zip = new JSZip();
-            processedFiles.forEach((file) => {
-                zip.file(file.name, file.blob);
-            });
-
-            zip.generateAsync({ type: 'blob' }).then((content) => {
-                downloadBlob(content, 'processed_files.zip');
-            });
+            processedFiles.forEach(file => zip.file(file.name, file.blob));
+            zip.generateAsync({ type: 'blob' }).then(content => downloadBlob(content, 'processed_files.zip'));
         });
 
         // --- Helper Functions ---
+        function displayFileNames() {
+            fileListUl.innerHTML = '';
+            processedFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${file.name}</span><button class="remove-file-btn" title="Remove ${file.name}" onclick="removeFile(${file.id})">x</button>`;
+                fileListUl.appendChild(li);
+            });
+        }
+        
+        function removeFile(fileId) {
+            processedFiles = processedFiles.filter(f => f.id !== fileId);
+            displayFileNames();
+            updateButtonStates();
+        }
+
         function handleAddMore(event) {
             const targetContainerId = event.target.dataset.target;
             const container = document.getElementById(targetContainerId);
             const newInputs = document.createElement('div');
             newInputs.classList.add('input-group');
-            
-            const placeholderText = targetContainerId === 'content-replace-container' ? 'word' : 'word for filename';
-
             newInputs.innerHTML = `
-                <input type="text" placeholder="Word to replace in ${placeholderText}">
-                <input type="text" placeholder="New ${placeholderText}">
+                <input type="text" placeholder="Word to replace">
+                <input type="text" placeholder="New word">
+                <button class="reverse-btn" title="Reverse words">🔄</button>
             `;
             container.appendChild(newInputs);
         }
@@ -291,26 +348,14 @@
         function getReplacementsFromContainer(containerId) {
             const replacements = [];
             const container = document.getElementById(containerId);
-            const inputGroups = container.getElementsByClassName('input-group');
-            for (let group of inputGroups) {
-                const oldWord = group.children[0].value.trim();
-                const newWord = group.children[1].value; // new word can be empty
-                if (oldWord) { 
-                    replacements.push({ oldWord, newWord });
-                }
-            }
-            return replacements;
-        }
-
-        function displayFileNames() {
-            fileListDiv.innerHTML = '<strong>Current Files:</strong>';
-            const ul = document.createElement('ul');
-            processedFiles.forEach(file => {
-                const li = document.createElement('li');
-                li.textContent = file.name;
-                ul.appendChild(li);
+            const inputGroups = container.querySelectorAll('.input-group');
+            inputGroups.forEach(group => {
+                const inputs = group.querySelectorAll('input[type="text"]');
+                const oldWord = inputs[0].value.trim();
+                const newWord = inputs[1].value;
+                if (oldWord) replacements.push({ oldWord, newWord });
             });
-            fileListDiv.appendChild(ul);
+            return replacements;
         }
         
         function downloadBlob(blob, name) {
@@ -325,7 +370,7 @@
         }
 
         function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
     </script>
 
