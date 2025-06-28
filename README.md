@@ -7,7 +7,7 @@
 [^1]: To make something easier.
 
 😃😃😃😃
-
+# • Description
 This webpage is a tool for editing multiple JSON files at once in four simple steps:
 
 * **1. Upload file:** Use this button to select one or more `.json` files from your computer. You can remove any file from the list by clicking the **"x"** button next to it.
